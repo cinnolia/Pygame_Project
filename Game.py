@@ -1,17 +1,25 @@
 import pygame
 import sys
 
-pygame.init()
+class Game:
+    def __init__(self):
+        pygame.init()
 
-window = pygame.display.set_mode((640,480))
+        pygame.display.set_caption('Comatose')
 
-clock = pygame.time.Clock() 
+        self.window = pygame.display.set_mode((640,480))
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()    
+        self.clock = pygame.time.Clock() 
+
+        self.image.load('')
+
+def run(self):
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()    
     
-    pygame.display.update()
-    clock.tick(60)
+        pygame.display.update()
+        self.clock.tick(60)
+Game().run()
