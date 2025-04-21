@@ -14,19 +14,21 @@ class Game:
 
         self.clock = pygame.time.Clock() 
 
-        self.player = PhysicsEntity(self, 'player', (50,50), (8, 15))
+        self.movement= [False, False]
 
         self.assets = {
             'player': load_image('entities\player.png')
         }
+        
+        self.player = PhysicsEntity(self, 'player', (50,50), (8, 15))
+
 
     def run(self):
         while True:
             self.window.fill((0,28,0))
 
             self.player.update((self.movement[1] - self.movement[0]))
-            self.player.render(self.window)
-            
+            self.player.render(self.window)   
 #input management?
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
