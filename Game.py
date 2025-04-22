@@ -12,23 +12,25 @@ class Game:
 
         self.window = pygame.display.set_mode((640,480))
 
-        self.clock = pygame.time.Clock() 
+        self.display = pygame.Surface((320, 240)) #render on this resolution then scale it up to the window size
+
+        self.clock = pygame.time.Clock()
 
         self.movement= [False, False]
 
         self.assets = {
-            'player': load_image('entities\player.png')
+            'player': load_image('entities/player.png')
         }
         
-        self.player = PhysicsEntity(self, 'player', (50,50), (8, 15))
+        self.player = PhysicsEntity(self, 'player', (50, 50), (8, 15))
 
 
     def run(self):
         while True:
-            self.window.fill((0,28,0))
+            self.display.fill((0,28,0))
 
-            self.player.update((self.movement[1] - self.movement[0]))
-            self.player.render(self.window)   
+            self.player.render(self.display)   
+            self.player.update((self.movement[1] - self.movement[0] , 0))
 #input management?
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -46,7 +48,7 @@ class Game:
                         self.movement[1] = False
 
 # game loop
+            self.window.blit(pygame.transform.scale(self.display, self.window.get_size()), (0, 0))
             pygame.display.update()
             self.clock.tick(60)
 Game().run()
-#picture this: eating a burger on the job, boss or customer walks inshe literally puts whats left of it in her pocket and when they leave she just like... yoinks it out and continues eating it... (lol me core)
