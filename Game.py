@@ -30,17 +30,21 @@ class Game:
         self.player = PhysicsEntity(self, 'player', (50, 50), (8, 15))
 
         self.tilemap = Tilemap(self, tile_size = 16)
-        
+
+        self.scroll = [0,0]
 
 
     def run(self):
         while True:
             self.display.fill((0,28,0))
             
-            self.tilemap.render(self.display)
+            self.tilemap.render(self.display, offset = self.scroll)
 
             self.player.update(self.tilemap, (self.movement[1] - self.movement[0] , 0))
-            self.player.render(self.display)
+            self.player.render(self.display, offset = self.scroll)
+
+
+            
 
 #input management?
             for event in pygame.event.get():
