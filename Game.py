@@ -11,9 +11,9 @@ class Game:
 
         pygame.display.set_caption('Comatose')
 
-        self.window = pygame.display.set_mode((640,480))
+        self.window = pygame.display.set_mode((864,540))
 
-        self.display = pygame.Surface((320, 240)) #render on this resolution then scale it up to the window size
+        self.display = pygame.Surface((288, 180)) #render on this resolution then scale it up to the window size
 
         self.clock = pygame.time.Clock()
 
@@ -25,7 +25,9 @@ class Game:
             'large_decor': load_images('tiles/large_decor'),
             'stone': load_images('tiles/stone'),
             'player': load_image('entities/player.png'),
-            'background': load_image('background.png')
+            'background': load_image('background.png'),
+            'background_1': load_image('background_1.png'),
+            'background_2': load_image('background_2.png')
         }
         print(self.assets)
         self.player = PhysicsEntity(self, 'player', (50, 50), (8, 15))
@@ -38,6 +40,8 @@ class Game:
     def run(self):
         while True:
             self.display.blit(self.assets['background'], (0, 0))
+            self.display.blit(self.assets['background_1'], (0, 0))
+            self.display.blit(self.assets['background_2'], (0, 0))
 
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 30
