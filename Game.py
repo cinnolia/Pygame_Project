@@ -50,7 +50,7 @@ class Game:
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
             
             self.clouds.update()
-            #self.clouds.render(self.display, offset = render_scroll)
+            self.clouds.render(self.display, offset = render_scroll)
 
             self.tilemap.render(self.display, offset = render_scroll)
 
