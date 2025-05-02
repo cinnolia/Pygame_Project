@@ -23,4 +23,21 @@ class Animation:
         self.current_frame = 0
         self.done = False
 
+    def copy(self):
+        return Animation(self.images, self.frame_rate, self.loop)
+
+    def update(self):
+        if self.loop:
+            self.current_frame = (self.current_frame + 1) % (self.img_duration / len(self.images))
+        else:
+            self.current_frame = min(self.current_frame + 1, self.img_duration / len(self.images)-1)
+            if self.current_frame >= self.img_duration / len(self.images) - 1:
+                self.done = True
+
+    def img(self):
+        return self.images[int(self.current_frame / self.frame_rate)]
+    
+
+
+
     
