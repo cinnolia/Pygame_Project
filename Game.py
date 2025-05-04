@@ -30,11 +30,11 @@ class Game:
             'background_1': load_image('background_1.png'),
             'background_2': load_image('background_2.png'),
             'clouds': load_images('clouds'),
-            'player/idle': Animation(load_images('entities/player/idle'), img_dur = 6),
-            'player/run': Animation(load_images('entities/player/run'), img_dur = 4),
-            'player/jump': Animation(load_images('entities/player/jump'), img_dur = 3),
-            'player/slide': Animation(load_images('entities/player/slide'), img_dur = 2),
-            'player/wall_slide': Animation(load_images('entities/player/wall_slide'), img_dur = 2),
+            'player/idle': Animation(load_images('entities/player/idle'), frame_rate= 6),
+            'player/run': Animation(load_images('entities/player/run'), frame_rate = 4),
+            'player/jump': Animation(load_images('entities/player/jump'), frame_rate = 3),
+            'player/slide': Animation(load_images('entities/player/slide'), frame_rate = 2),
+            'player/wall_slide': Animation(load_images('entities/player/wall_slide'), frame_rate = 2),
 
         }
         self.clouds = Clouds(self.assets['clouds'], count = 16)
