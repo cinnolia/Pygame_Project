@@ -1,7 +1,7 @@
 import pygame
 
-NEIGHBOUR_OFFSETS = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1), (0, 1), (1, 1)]
-PHYSICS_TILES = {'stone', 'grass'}
+NEIGHBOUR_OFFSETS = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1), (0, 1), (1, 1)] # calculates all the possible positions for tiles to appear on the screen (creates the ongrid space i suppose?)
+PHYSICS_TILES = {'stone', 'grass'} #physics tiles are the one that have physics (the decorational ones do not typically this is just to separate them (these are different from offgrid tiles))
 
 class Tilemap:
     def __init__(self, game, tile_size = 16):
@@ -34,8 +34,11 @@ class Tilemap:
 
     def render(self, surf, offset = (0, 0)):
         for tile in self.offgrid_tiles:
-            surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] - offset[0], tile['pos'][1] - offset[1])) 
+           surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] - offset[0], tile['pos'][1] - offset[1])) 
 
-        for loc in self.tilemap:
-            tile = self.tilemap[loc]
-            surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))[1]
+        for x in range(offset[0] // self.tile_size, (offset[0] + surf.get_width()) // self.tile_size + 1):
+              for y in range(offset[1] // self.tile_size, (offset[1] + surf.get_height()) // self.tile_size + 1):
+                  loc = str(x) + ';' + str(y)
+                  if loc in self.tilemap:
+                      tile = self.tilemap[loc]
+                      surf.blit(self.game.assets[tile['type']][tile['variant']], (tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]))[1]
