@@ -9,9 +9,9 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        pygame.display.set_caption('Comatose')
+        pygame.display.set_caption('Sleepish?')
 
-        self.window = pygame.display.set_mode((640,480))
+        self.window = pygame.display.set_mode((640,480)) # sets the size of the window
 
         self.display = pygame.Surface((320, 240)) #render on this resolution then scale it up to the window size
 
@@ -26,19 +26,20 @@ class Game:
             'stone': load_images('tiles/stone'),
             'player': load_image('entities/player.png'),
             'background': load_image('background.png')
-        }
-        print(self.assets)
-        self.player = PhysicsEntity(self, 'player', (50, 50), (8, 15))
+        } #preloads all assets?
+        
+        self.player = PhysicsEntity(self, 'player', (50, 50), (8, 15)) #assigns player parameters?
 
-        self.tilemap = Tilemap(self, tile_size = 16)
+        self.tilemap = Tilemap(self, tile_size = 16) # assigns the tilemap parameters
 
-        self.scroll = [0,0]
+        self.scroll = [0,0] 
 
 
     def run(self):
         while True:
-            self.display.blit(self.assets['background'], (0, 0))
+            self.display.blit(self.assets['background'], (0, 0)) # sets the background image
 
+            #the camera. essentialy makes the rest of the world move to keep the player roughly at center
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
             self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1]) / 30
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
