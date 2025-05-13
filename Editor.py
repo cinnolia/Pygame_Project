@@ -18,7 +18,7 @@ class Editor:
 
         self.clock = pygame.time.Clock()
 
-
+        self.tile_list = list(self.assets)
 
         self.assets = {
             'decor' : load_images('tiles/decor'),
