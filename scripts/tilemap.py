@@ -1,7 +1,22 @@
 import pygame
 
+import json
+
+AUTOTILE_MAP = {
+    tuple(sorted([(1, 0), (0, 1)])): 0,
+    tuple(sorted([(1, 0), (0, 1), (-1, 0)])): 1,
+    tuple(sorted([(-1, 0), (0, 1)])): 2, 
+    tuple(sorted([(-1, 0), (0, -1), (0, 1)])): 3,
+    tuple(sorted([(-1, 0), (0, -1)])): 4,
+    tuple(sorted([(-1, 0), (0, -1), (1, 0)])): 5,
+    tuple(sorted([(1, 0), (0, -1)])): 6,
+    tuple(sorted([(1, 0), (0, -1), (0, 1)])): 7,
+    tuple(sorted([(1, 0), (-1, 0), (0, 1), (0, -1)])): 8,
+}
+
 NEIGHBOUR_OFFSETS = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1), (0, 1), (1, 1)] # calculates all the possible positions for tiles to appear on the screen (creates the ongrid space i suppose?)
 PHYSICS_TILES = {'stone', 'grass'} #physics tiles are the one that have physics (the decorational ones do not typically this is just to separate them (these are different from offgrid tiles))
+AUTOTILE_TYPES = {'grass' , 'stone'}
 
 class Tilemap:
     def __init__(self, game, tile_size = 16):
@@ -31,6 +46,14 @@ class Tilemap:
                 rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
 
+    def autotile(self):
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            neighbours = set()
+            for shift in [(1,0), (-1,0), (0, -1), (0, 1)]:
+                check_loc = str(tile['pos'][0] + shift) + ';' + str(tile['pos'][1] +shift[1])
+                if check_loc in self.tilemap:
+                    pass #this is where we're continuing from
 
     def render(self, surf, offset = (0, 0)):
         for tile in self.offgrid_tiles:
