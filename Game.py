@@ -37,6 +37,8 @@ class Game:
 
         self.tilemap = Tilemap(self, tile_size = 16) # assigns the tilemap parameters
 
+        self.tilemap.load('map.json')
+
         self.scroll = [0,0] 
 
 

@@ -51,9 +51,13 @@ class Tilemap:
             tile = self.tilemap[loc]
             neighbours = set()
             for shift in [(1,0), (-1,0), (0, -1), (0, 1)]:
-                check_loc = str(tile['pos'][0] + shift) + ';' + str(tile['pos'][1] +shift[1])
+                check_loc = str(tile['pos'][0] + shift[0]) + ';' + str(tile['pos'][1] +shift[1])
                 if check_loc in self.tilemap:
-                    pass #this is where we're continuing from
+                    if self.tilemap[check_loc]['type'] == tile['type']:
+                        neighbours.add(shift)
+            neighbours = tuple(sorted(neighbours))
+            if (tile['type'] in AUTOTILE_TYPES) and (neighbours in AUTOTILE_MAP):
+                tile['variant'] = AUTOTILE_MAP[neighbours]
 
     def render(self, surf, offset = (0, 0)):
         for tile in self.offgrid_tiles:
