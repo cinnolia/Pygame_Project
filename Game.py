@@ -56,7 +56,6 @@ class Game:
             self.player.update(self.tilemap, (self.movement[1] - self.movement[0] , 0))
             self.player.render(self.display, offset = render_scroll)
 
-
             
 
 #input management?
