@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 
 from scripts.utils import load_image, load_images, Animation
 from scripts.entities import PhysicsEntity, Player
@@ -44,8 +45,9 @@ class Game:
         self.tilemap.load('map.json')
 
         self.leaf_spawners = []
-        for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
+        for tree in self.tilemap.extract([('large_decor', 2)], keep = True):
             self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
+        print(self.leaf_spawners)
             
         self.particles = []
 
@@ -72,12 +74,12 @@ class Game:
             self.player.render(self.display, offset = render_scroll)
 
             for particle in self.particles.copy():
-                            kill = particle.update()
-                            particle.render(self.display, offset=render_scroll)
-                            if particle.type == 'leaf':
-                                particle.pos[0] += math.sin(particle.animation.frame * 0.035) * 0.3
-                            if kill:
-                                self.particles.remove(particle)
+                kill = particle.update()
+                particle.render(self.display, offset=render_scroll)
+                if particle.type == 'leaf':
+                    particle.pos[0] += math.sin(particle.animation.frame * 0.035) * 0.3
+                if kill:
+                    self.particles.remove(particle)
             
 #input management?
             for event in pygame.event.get():

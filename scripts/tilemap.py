@@ -42,6 +42,9 @@ class Tilemap:
                 matches[-1]['pos'][1] *= self.tile_size
                 if not keep:
                     del self.tilemap[loc]
+        return matches  # Ensure matches are returned
+
+
 
 
     def tiles_around(self, pos):
