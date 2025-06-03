@@ -49,7 +49,17 @@ class Game:
 
         self.tilemap = Tilemap(self, tile_size = 16) # assigns the tilemap parameters
 
-        self.tilemap.load('map.json')
+        self.load_level(0)
+
+        
+        
+        self.projectiles = [] # list of projectiles, not used yet
+        self.particles = []
+
+        self.scroll = [0,0] 
+    
+    def load_level(self, map_id):
+        self.tilemap.load('assets/maps/' + str(map_id) + '.json') # loads the map from the assets folder
 
         self.leaf_spawners = []
         for tree in self.tilemap.extract([('large_decor', 2)], keep = True):
@@ -63,12 +73,6 @@ class Game:
                 self.player.pos = spawner['pos']
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
-        
-        self.projectiles = [] # list of projectiles, not used yet
-        self.particles = []
-
-        self.scroll = [0,0] 
-
 
     def run(self):
         while True:
