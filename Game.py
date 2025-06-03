@@ -69,11 +69,12 @@ class Game:
             self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
         # print(self.leaf_spawners)
 
-        self.enemies = []  # Add this line before using self.enemies
+        self.enemies = []  # list of enemies, not used yet?
 
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
             if spawner['variant'] == 0:
                 self.player.pos = spawner['pos']
+                self.player.air_time= 0
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
 
