@@ -59,6 +59,7 @@ class Game:
         self.sparks = []
 
         self.scroll = [0,0] 
+        self.dead = 0
     
     def load_level(self, map_id):
         self.tilemap.load('assets/maps/' + str(map_id) + '.json') # loads the map from the assets folder
@@ -66,7 +67,7 @@ class Game:
         self.leaf_spawners = []
         for tree in self.tilemap.extract([('large_decor', 2)], keep = True):
             self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
-        print(self.leaf_spawners)
+        # print(self.leaf_spawners)
 
         self.enemies = []  # Add this line before using self.enemies
 
@@ -79,6 +80,12 @@ class Game:
     def run(self):
         while True:
             self.display.blit(self.assets['background'], (0, 0)) # sets the background image
+
+            if self.dead:
+                self.dead += 1
+                if self.dead > 40:
+                    self.load_level(0)
+                    self.dead = 0  # <-- Add this line to reset the death timer
 
             #the camera. essentialy makes the rest of the world move to keep the player roughly at center
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
@@ -98,9 +105,9 @@ class Game:
                 if kill:
                     self.enemies.remove(enemy)
 
-
-            self.player.update(self.tilemap, (self.movement[1] - self.movement[0] , 0))
-            self.player.render(self.display, offset = render_scroll)
+            if not self.dead:
+                self.player.update(self.tilemap, (self.movement[1] - self.movement[0] , 0))
+                self.player.render(self.display, offset = render_scroll)
 
             for projectile in self.projectiles.copy():
                 projectile[0][0] += projectile[1]
@@ -110,18 +117,18 @@ class Game:
                 if self.tilemap.solid_check(projectile[0]):
                     self.projectiles.remove(projectile)
                     for i in range(4):
-                            self.sparks.append(Spark(projectile[0],random.random() -0.5 + (math.pi if projectile[1] > 0 else 0), 2 + random.random()))
+                        self.sparks.append(Spark(projectile[0].copy(), random.random() -0.5 + (math.pi if projectile[1] > 0 else 0), 2 + random.random()))
                 elif projectile[2] > 360:
                     self.projectiles.remove(projectile)
-                elif abs(self.player.dashing) > 50:
-                    if self.player.rect().collidepoint(projectile[0]):
-                        self.projectiles.remove(projectile)
-                        for i in range(30):
-                            angle = random.random() * math.pi * 2
-                            speed = random.random() * 5
-                            self.sparks.append(Spark(self.player.rect().center, angle, 2 + random.random()))
-                            self.particles.append(Particle(self, 'particle', self.player.rect().center, velocity=[math.cos(angle + math.pi) * speed * 0.5, math.sin(angle + math.pi) * speed * 0.5], frame=random.randint(0, 7)))
-                        
+                elif self.player.rect().collidepoint(projectile[0]):
+                    self.projectiles.remove(projectile)
+                    self.dead += 1
+                    for i in range(30):
+                        angle = random.random() * math.pi * 2
+                        speed = random.random() * 5
+                        self.sparks.append(Spark(list(self.player.rect().center), angle, 2 + random.random()))
+                        self.particles.append(Particle(self, 'particle', list(self.player.rect().center), velocity=[math.cos(angle + math.pi) * speed * 0.5, math.sin(angle + math.pi) * speed * 0.5], frame=random.randint(0, 7)))
+            
             for spark in self.sparks.copy():
                 kill = spark.update()
                 spark.render(self.display, offset=render_scroll)
