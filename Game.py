@@ -52,6 +52,8 @@ class Game:
 
         self.load_level(0)
 
+        self.screenshake = 0
+
         
         
         self.projectiles = [] # list of projectiles, not used yet
@@ -62,26 +64,29 @@ class Game:
         self.dead = 0
     
     def load_level(self, map_id):
-        self.tilemap.load('assets/maps/' + str(map_id) + '.json') # loads the map from the assets folder
+        self.tilemap.load('assets/maps/' + str(map_id) + '.json')  # loads the map from the assets folder
 
         self.leaf_spawners = []
-        for tree in self.tilemap.extract([('large_decor', 2)], keep = True):
+        for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
             self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
-        # print(self.leaf_spawners)
 
-        self.enemies = []  # list of enemies, not used yet?
+        self.enemies = []  # list of enemies
 
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
             if spawner['variant'] == 0:
                 self.player.pos = spawner['pos']
-                self.player.air_time= 0
+                self.player.air_time = 0
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
+
+        self.particles = []  # Clear all particles when the level is reset
+        self.sparks = []  # Optionally clear sparks as well
 
     def run(self):
         while True:
             self.display.blit(self.assets['background'], (0, 0)) # sets the background image
 
+            self.screenshake = max(0, self.screenshake - 1)  # gradually reduce screenshake
             if self.dead:
                 self.dead += 1
                 if self.dead > 40:
@@ -121,14 +126,16 @@ class Game:
                         self.sparks.append(Spark(projectile[0].copy(), random.random() -0.5 + (math.pi if projectile[1] > 0 else 0), 2 + random.random()))
                 elif projectile[2] > 360:
                     self.projectiles.remove(projectile)
-                elif self.player.rect().collidepoint(projectile[0]):
-                    self.projectiles.remove(projectile)
-                    self.dead += 1
-                    for i in range(30):
-                        angle = random.random() * math.pi * 2
-                        speed = random.random() * 5
-                        self.sparks.append(Spark(list(self.player.rect().center), angle, 2 + random.random()))
-                        self.particles.append(Particle(self, 'particle', list(self.player.rect().center), velocity=[math.cos(angle + math.pi) * speed * 0.5, math.sin(angle + math.pi) * speed * 0.5], frame=random.randint(0, 7)))
+                elif abs(self.player.dashing) < 50:
+                    if self.player.rect().collidepoint(projectile[0]):
+                        self.projectiles.remove(projectile)
+                        self.dead += 1
+                        self.screenshake = max(16, self.screenshake)  # Apply screenshake properly
+                        for i in range(30):  # Generate particles only when the player is hit
+                            angle = random.random() * math.pi * 2
+                            speed = random.random() * 5
+                            self.sparks.append(Spark(list(self.player.rect().center), angle, 2 + random.random()))
+                            self.particles.append(Particle(self, 'particle', list(self.player.rect().center), velocity=[math.cos(angle + math.pi) * speed * 0.5, math.sin(angle + math.pi) * speed * 0.5], frame=random.randint(0, 7)))
             
             for spark in self.sparks.copy():
                 kill = spark.update()
@@ -165,7 +172,9 @@ class Game:
                         self.movement[1] = False
 
 # game loop
-            self.window.blit(pygame.transform.scale(self.display, self.window.get_size()), (0, 0))
+
+            screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
+            self.window.blit(pygame.transform.scale(self.display, self.window.get_size()), screenshake_offset)
             pygame.display.update()
             self.clock.tick(60)
 Game().run()
