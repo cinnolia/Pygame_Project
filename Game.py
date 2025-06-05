@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import math
+import os
 
 from scripts.utils import load_image, load_images, Animation
 from scripts.entities import PhysicsEntity, Player, Enemy
@@ -50,18 +51,20 @@ class Game:
 
         self.tilemap = Tilemap(self, tile_size = 16) # assigns the tilemap parameters
 
-        self.load_level(0)
+        self.level = 0 # current level
+        self.load_level(self.level) # loads the level
 
         self.screenshake = 0
 
         
         
-        self.projectiles = [] # list of projectiles, not used yet
+        self.projectiles = [] # list of projectiles
         self.particles = []
         self.sparks = []
 
         self.scroll = [0,0] 
         self.dead = 0
+        self.transition = -30
     
     def load_level(self, map_id):
         self.tilemap.load('assets/maps/' + str(map_id) + '.json')  # loads the map from the assets folder
@@ -76,6 +79,8 @@ class Game:
             if spawner['variant'] == 0:
                 self.player.pos = spawner['pos']
                 self.player.air_time = 0
+                self.player.dashing = 0
+                self.player.velocity = [0, 0]
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
 
@@ -87,11 +92,25 @@ class Game:
             self.display.blit(self.assets['background'], (0, 0)) # sets the background image
 
             self.screenshake = max(0, self.screenshake - 1)  # gradually reduce screenshake
+
+            if not len(self.enemies):
+                self.transition += 1
+                if self.transition > 30:
+                    self.level += min(self.level + 1, len(os.listdir('assets/maps/')) - 1)
+                    self.load_level(self.level)
+                    self.transition = -30  # Reset transition for the next level
+            if self.transition < 0:
+                self.transition += 1
+
             if self.dead:
                 self.dead += 1
+                if self.dead >= 1:
+                    self.transition = min(30, self.transition + 1)
+
                 if self.dead > 40:
-                    self.load_level(0)
-                    self.dead = 0  # <-- Add this line to reset the death timer
+                    self.load_level(self.level)  # Reload the level after death
+                    self.dead = 0
+                    self.transition = -30  # Reset transition for the new life
 
             #the camera. essentialy makes the rest of the world move to keep the player roughly at center
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 30
@@ -171,6 +190,11 @@ class Game:
                     if event.key == pygame.K_RIGHT:
                         self.movement[1] = False
 
+            if self.transition:
+                transition_surf = pygame.Surface(self.display.get_size())
+                pygame.draw.circle(transition_surf, (255, 255, 255), (self.display.get_width() / 2, self.display.get_height() / 2), (30 - abs(self.transition)) * 8)
+                transition_surf.set_colorkey((225, 225, 255))
+                self.display.blit(transition_surf, (0, 0))
 # game loop
 
             screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
